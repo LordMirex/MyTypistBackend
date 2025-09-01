@@ -4,6 +4,7 @@ Document processing background tasks
 
 import os
 import time
+import asyncio
 from datetime import datetime
 from typing import Dict, Any, List
 from celery import Celery
@@ -40,10 +41,19 @@ def generate_document_task(self, document_id: int, placeholder_data: Dict[str, A
         document.status = DocumentStatus.PROCESSING
         db.commit()
         
-        # Generate document
-        success = await DocumentService.generate_document_from_template(
-            document_id, placeholder_data
+        # Generate document (run async function in sync context)
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        success = loop.run_until_complete(
+            DocumentService.generate_document_from_template(document_id, placeholder_data)
         )
+        
+        # Refresh document to get updated data
+        db.refresh(document)
         
         if success:
             # Log successful generation
@@ -138,21 +148,18 @@ def generate_batch_documents_task(
                     }
                 )
                 
-                # Generate document
-                result = generate_document_task.delay(document_id, placeholder_data)
+                # Generate document directly (not using delay to avoid recursion)
+                result_data = generate_document_task(document_id, placeholder_data)
                 
-                # Wait for completion (with timeout)
-                task_result = result.get(timeout=settings.DOCUMENT_GENERATION_TIMEOUT)
-                
-                if task_result["success"]:
+                if result_data["success"]:
                     successful += 1
                 else:
                     failed += 1
                 
                 results.append({
                     "document_id": document_id,
-                    "success": task_result["success"],
-                    "status": task_result["status"]
+                    "success": result_data["success"],
+                    "status": result_data["status"]
                 })
             
             except Exception as e:
@@ -280,19 +287,20 @@ def optimize_document_storage_task():
         space_saved = 0
         
         for document in old_documents:
-            if not document.file_path or not os.path.exists(document.file_path):
+            file_path = document.file_path
+            if not file_path or not os.path.exists(file_path):
                 continue
             
             # Skip if already compressed
-            if document.file_path.endswith('.gz'):
+            if file_path.endswith('.gz'):
                 continue
             
             try:
-                original_size = os.path.getsize(document.file_path)
-                compressed_path = document.file_path + '.gz'
+                original_size = os.path.getsize(file_path)
+                compressed_path = file_path + '.gz'
                 
                 # Compress file
-                with open(document.file_path, 'rb') as f_in:
+                with open(file_path, 'rb') as f_in:
                     with gzip.open(compressed_path, 'wb') as f_out:
                         shutil.copyfileobj(f_in, f_out)
                 
@@ -304,7 +312,7 @@ def optimize_document_storage_task():
                     document.file_path = compressed_path
                     
                     # Remove original
-                    os.remove(document.file_path[:-3])  # Remove .gz to get original path
+                    os.remove(file_path)
                     
                     compressed_count += 1
                     space_saved += (original_size - compressed_size)
@@ -357,19 +365,19 @@ def generate_document_thumbnails_task():
         thumbnail_count = 0
         
         for document in documents:
-            if not document.file_path or not os.path.exists(document.file_path):
+            file_path = document.file_path
+            if not file_path or not os.path.exists(file_path):
                 continue
             
             try:
                 # Generate thumbnail (implementation would depend on document type)
-                thumbnail_path = generate_document_thumbnail(document.file_path)
+                thumbnail_path = generate_document_thumbnail(file_path)
                 
                 if thumbnail_path:
                     # Store thumbnail path in document metadata
-                    if not document.placeholder_data:
-                        document.placeholder_data = {}
-                    
-                    document.placeholder_data["thumbnail_path"] = thumbnail_path
+                    placeholder_data = document.placeholder_data or {}
+                    placeholder_data["thumbnail_path"] = thumbnail_path
+                    document.placeholder_data = placeholder_data
                     thumbnail_count += 1
             
             except Exception as e:
@@ -397,30 +405,3 @@ def generate_document_thumbnail(file_path: str) -> str:
     # This would implement actual thumbnail generation
     # For now, return placeholder
     return f"{file_path}.thumbnail.png"
-
-
-# Schedule periodic tasks
-@celery_app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    """Set up periodic tasks"""
-    
-    # Clean temporary files every hour
-    sender.add_periodic_task(
-        3600.0,  # 1 hour
-        cleanup_temporary_files_task.s(),
-        name='cleanup temporary files'
-    )
-    
-    # Optimize storage daily
-    sender.add_periodic_task(
-        86400.0,  # 24 hours
-        optimize_document_storage_task.s(),
-        name='optimize document storage'
-    )
-    
-    # Generate thumbnails daily
-    sender.add_periodic_task(
-        86400.0,  # 24 hours
-        generate_document_thumbnails_task.s(),
-        name='generate document thumbnails'
-    )

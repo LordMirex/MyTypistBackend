@@ -18,6 +18,8 @@ class AuditEventType(str, enum.Enum):
     LOGIN_FAILED = "login_failed"
     PASSWORD_CHANGE = "password_change"
     PASSWORD_RESET = "password_reset"
+    REGISTRATION_SUCCESSFUL = "registration_successful"
+    REGISTRATION_FAILED = "registration_failed"
     
     # User management events
     USER_CREATED = "user_created"
@@ -68,6 +70,8 @@ class AuditEventType(str, enum.Enum):
     SYSTEM_SHUTDOWN = "system_shutdown"
     SYSTEM_ERROR = "system_error"
     BACKUP_CREATED = "backup_created"
+    UNHANDLED_EXCEPTION = "unhandled_exception"
+    SLOW_REQUEST = "slow_request"
     
     # Compliance events
     GDPR_REQUEST = "gdpr_request"

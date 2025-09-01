@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["cargo", "file", "libiconv", "libxcrypt", "openssl", "pkg-config", "rustc"]
+packages = ["cargo", "file", "libiconv", "libxcrypt", "openssl", "pkg-config", "rustc", "redis"]
 
 [workflows]
 runButton = "Project"
@@ -29,3 +29,7 @@ waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

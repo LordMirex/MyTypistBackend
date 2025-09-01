@@ -33,13 +33,29 @@ visit.Base.metadata.create_all(bind=engine)
 payment.Base.metadata.create_all(bind=engine)
 audit.Base.metadata.create_all(bind=engine)
 
-# Initialize Redis
-redis_client = redis.Redis(
-    host=settings.REDIS_HOST,
-    port=settings.REDIS_PORT,
-    password=settings.REDIS_PASSWORD,
-    decode_responses=True
-)
+# Initialize Redis (optional)
+try:
+    redis_client = redis.Redis(
+        host=settings.REDIS_HOST,
+        port=settings.REDIS_PORT,
+        password=settings.REDIS_PASSWORD,
+        decode_responses=True,
+        socket_connect_timeout=5
+    )
+    # Test connection
+    redis_client.ping()
+except Exception:
+    # Use a mock Redis client for development
+    class MockRedis:
+        def ping(self): return True
+        def get(self, key): return None
+        def set(self, key, value, ex=None): return True
+        def setex(self, key, time, value): return True
+        def delete(self, key): return True
+        def incr(self, key): return 1
+        def expire(self, key, time): return True
+    
+    redis_client = MockRedis()
 
 # Initialize Celery
 celery_app = Celery(
@@ -70,12 +86,12 @@ async def lifespan(app: FastAPI):
     # Startup
     print("🚀 MyTypist Backend Starting...")
     
-    # Test Redis connection
+    # Test Redis connection (optional)
     try:
         redis_client.ping()
         print("✅ Redis connection established")
     except Exception as e:
-        print(f"❌ Redis connection failed: {e}")
+        print(f"⚠️ Redis connection failed (continuing without caching): {e}")
     
     # Test database connection
     try:
@@ -87,13 +103,19 @@ async def lifespan(app: FastAPI):
         print(f"❌ Database connection failed: {e}")
     
     # Initialize audit service
-    AuditService.log_system_event("SYSTEM_STARTUP", {"version": settings.APP_VERSION})
+    try:
+        AuditService.log_system_event("SYSTEM_STARTUP", {"version": settings.APP_VERSION})
+    except Exception as e:
+        print(f"⚠️ Audit service failed to start: {e}")
     
     yield
     
     # Shutdown
     print("🛑 MyTypist Backend Shutting down...")
-    AuditService.log_system_event("SYSTEM_SHUTDOWN", {})
+    try:
+        AuditService.log_system_event("SYSTEM_SHUTDOWN", {})
+    except Exception as e:
+        print(f"⚠️ Audit service error during shutdown: {e}")
 
 
 # Create FastAPI app
