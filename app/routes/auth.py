@@ -20,6 +20,7 @@ from app.schemas.user import (
 )
 from app.services.auth_service import AuthService
 from app.services.audit_service import AuditService
+from app.models.audit import AuditEventType
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.utils.security import get_current_user, get_current_active_user
 
@@ -43,12 +44,15 @@ async def register(
     
     if existing_user:
         # Log failed registration attempt
-        AuditService.log_auth_event(
-            "REGISTRATION_FAILED",
-            None,
-            request,
-            {"email": user_data.email, "reason": "user_exists"}
-        )
+        try:
+            AuditService.log_auth_event(
+                "registration_failed",
+                None,
+                request,
+                {"email": user_data.email, "reason": "user_exists"}
+            )
+        except Exception as e:
+            print(f"Audit logging failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="User with this email or username already exists"
@@ -84,12 +88,15 @@ async def register(
         logger.error(f"Failed to send welcome email: {e}")
     
     # Log successful registration
-    AuditService.log_auth_event(
-        "USER_REGISTERED",
-        user.id,
-        request,
-        {"email": user.email, "role": user.role.value}
-    )
+    try:
+        AuditService.log_auth_event(
+            "user_registered",
+            user.id,
+            request,
+            {"email": user.email, "role": user.role.value}
+        )
+    except Exception as e:
+        print(f"Audit logging failed: {e}")
     
     return TokenResponse(
         access_token=access_token,

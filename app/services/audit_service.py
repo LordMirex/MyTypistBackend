@@ -125,8 +125,18 @@ class AuditService:
     ) -> AuditLog:
         """Log authentication event"""
         
+        # Map string event type to enum value
+        try:
+            audit_event_type = AuditEventType(event_type)
+        except ValueError:
+            # If the event type doesn't match exactly, try to find it by value
+            audit_event_type = next(
+                (e for e in AuditEventType if e.value == event_type), 
+                AuditEventType.LOGIN  # default fallback
+            )
+        
         return AuditService.log_event(
-            event_type=AuditEventType(event_type),
+            event_type=audit_event_type,
             event_level=AuditLevel.INFO,
             event_message=f"Authentication event: {event_type}",
             user_id=user_id,

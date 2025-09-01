@@ -183,15 +183,18 @@ async def performance_middleware(request: Request, call_next):
     
     # Log slow requests
     if process_time > 1.0:  # Log requests taking more than 1 second
-        AuditService.log_performance_issue(
-            "SLOW_REQUEST",
-            {
-                "path": request.url.path,
-                "method": request.method,
-                "duration": process_time,
-                "status_code": response.status_code
-            }
-        )
+        try:
+            AuditService.log_performance_issue(
+                "slow_request",
+                {
+                    "path": request.url.path,
+                    "method": request.method,
+                    "duration": process_time,
+                    "status_code": response.status_code
+                }
+            )
+        except Exception as e:
+            print(f"Performance audit logging failed: {e}")
     
     return response
 
