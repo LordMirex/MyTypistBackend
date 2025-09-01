@@ -75,7 +75,15 @@ class Settings(BaseSettings):
     FLUTTERWAVE_BASE_URL: str = "https://api.flutterwave.com/v3"
     FLUTTERWAVE_WEBHOOK_SECRET: str = os.getenv("FLUTTERWAVE_WEBHOOK_SECRET", "")
     
-    # Email (for notifications)
+    # Email Settings - SendGrid Integration
+    SENDGRID_API_KEY: str = os.getenv("SENDGRID_API_KEY", "")
+    SENDGRID_FROM_EMAIL: str = os.getenv("SENDGRID_FROM_EMAIL", "noreply@mytypist.com")
+    SENDGRID_FROM_NAME: str = os.getenv("SENDGRID_FROM_NAME", "MyTypist")
+    
+    # Frontend URL for email links
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://mytypist.com")
+    
+    # Legacy SMTP (for backup)
     SMTP_HOST: str = os.getenv("SMTP_HOST", "")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USER: str = os.getenv("SMTP_USER", "")

@@ -68,6 +68,21 @@ async def register(
     access_token = AuthService.create_access_token({"sub": str(user.id)})
     refresh_token = AuthService.create_refresh_token({"sub": str(user.id)})
     
+    # Send welcome email with verification
+    try:
+        from app.services.email_service import email_service
+        verification_token = AuthService.create_email_verification_token(user.email)
+        import asyncio
+        asyncio.create_task(
+            email_service.send_welcome_email(
+                user.email,
+                user.first_name or user.username or "User", 
+                verification_token
+            )
+        )
+    except Exception as e:
+        logger.error(f"Failed to send welcome email: {e}")
+    
     # Log successful registration
     AuditService.log_auth_event(
         "USER_REGISTERED",
@@ -343,8 +358,19 @@ async def forgot_password(
         # Generate reset token (implementation depends on email service)
         reset_token = AuthService.create_password_reset_token(user.email)
         
-        # TODO: Send email with reset token
-        # EmailService.send_password_reset_email(user.email, reset_token)
+        # Send password reset email
+        try:
+            from app.services.email_service import email_service
+            import asyncio
+            asyncio.create_task(
+                email_service.send_password_reset_email(
+                    user.email, 
+                    user.first_name or user.username or "User",
+                    reset_token
+                )
+            )
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {e}")
         
         # Log password reset request
         AuditService.log_auth_event(
@@ -458,8 +484,19 @@ async def resend_verification_email(
     # Generate verification token
     verification_token = AuthService.create_email_verification_token(current_user.email)
     
-    # TODO: Send verification email
-    # EmailService.send_verification_email(current_user.email, verification_token)
+    # Send verification email
+    try:
+        from app.services.email_service import email_service
+        import asyncio
+        asyncio.create_task(
+            email_service.send_welcome_email(
+                current_user.email,
+                current_user.first_name or current_user.username or "User",
+                verification_token
+            )
+        )
+    except Exception as e:
+        logger.error(f"Failed to send verification email: {e}")
     
     # Log verification resend
     AuditService.log_auth_event(

@@ -17,7 +17,8 @@ from celery import Celery
 from config import settings
 from database import engine, SessionLocal
 from app.models import user, template, document, signature, visit, payment, audit
-from app.routes import auth, documents, templates, signatures, analytics, payments, admin, monitoring
+from app.services.feedback_service import Feedback  # Import feedback model
+from app.routes import auth, documents, templates, signatures, analytics, payments, admin, monitoring, feedback
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.security import SecurityMiddleware
 from app.middleware.audit import AuditMiddleware
@@ -35,6 +36,12 @@ signature.Base.metadata.create_all(bind=engine)
 visit.Base.metadata.create_all(bind=engine)
 payment.Base.metadata.create_all(bind=engine)
 audit.Base.metadata.create_all(bind=engine)
+
+# Create feedback table
+try:
+    Feedback.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"⚠️ Failed to create feedback tables: {e}")
 
 # Initialize Redis (optional)
 try:
@@ -114,7 +121,7 @@ async def lifespan(app: FastAPI):
     
     # Initialize audit service
     try:
-        AuditService.log_system_event("SYSTEM_STARTUP", {"version": settings.APP_VERSION})
+        AuditService.log_system_event(audit.AuditEventType.SYSTEM_STARTUP.value, {"version": settings.APP_VERSION})
     except Exception as e:
         print(f"⚠️ Audit service failed to start: {e}")
     
@@ -123,7 +130,7 @@ async def lifespan(app: FastAPI):
     # Shutdown
     print("🛑 MyTypist Backend Shutting down...")
     try:
-        AuditService.log_system_event("SYSTEM_SHUTDOWN", {})
+        AuditService.log_system_event(audit.AuditEventType.SYSTEM_SHUTDOWN.value, {})
     except Exception as e:
         print(f"⚠️ Audit service error during shutdown: {e}")
 
@@ -194,7 +201,7 @@ async def performance_middleware(request: Request, call_next):
 async def global_exception_handler(request: Request, exc: Exception):
     """Handle unexpected exceptions"""
     AuditService.log_system_event(
-        "UNHANDLED_EXCEPTION",
+        audit.AuditEventType.UNHANDLED_EXCEPTION.value,
         {
             "path": request.url.path,
             "method": request.method,
@@ -270,6 +277,9 @@ app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"]
 app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(monitoring.router, prefix="/api/monitoring", tags=["Monitoring"])
+
+# Include feedback system
+app.include_router(feedback.router, prefix="/api/feedback", tags=["Feedback"])
 
 # Include enhanced v2 API endpoints
 try:

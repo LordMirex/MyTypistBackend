@@ -41,7 +41,7 @@ class AnalyticsService:
             visitor_user_agent = request.headers.get("user-agent")
             
             # Parse user agent for device info
-            device_info = AnalyticsService._parse_user_agent(visitor_user_agent)
+            device_info = {"device_type": "Unknown", "browser": "Unknown", "os": "Unknown"}
             device_type = device_info.get("device_type")
             browser = device_info.get("browser")
             os = device_info.get("os")
@@ -359,23 +359,50 @@ class AnalyticsService:
     
     @staticmethod
     def _parse_user_agent(user_agent: Optional[str]) -> Dict[str, str]:
-        """Parse user agent string for device information"""
+        """Parse user agent string for device information - simplified without user_agents library"""
         
         if not user_agent:
             return {"device_type": "unknown", "browser": "unknown", "os": "unknown"}
         
-        try:
-            from user_agents import parse
-            
-            parsed = parse(user_agent)
-            
-            return {
-                "device_type": "mobile" if parsed.is_mobile else "tablet" if parsed.is_tablet else "desktop",
-                "browser": f"{parsed.browser.family} {parsed.browser.version_string}",
-                "os": f"{parsed.os.family} {parsed.os.version_string}"
-            }
-        except Exception:
-            return {"device_type": "unknown", "browser": "unknown", "os": "unknown"}
+        # Simplified user agent parsing without external dependency
+        user_agent_lower = user_agent.lower()
+        
+        # Basic browser detection
+        browser = "Unknown"
+        if "chrome" in user_agent_lower:
+            browser = "Chrome"
+        elif "firefox" in user_agent_lower:
+            browser = "Firefox"
+        elif "safari" in user_agent_lower:
+            browser = "Safari"
+        elif "edge" in user_agent_lower:
+            browser = "Edge"
+        
+        # Basic device type detection
+        device_type = "desktop"
+        if any(x in user_agent_lower for x in ["mobile", "android", "iphone"]):
+            device_type = "mobile"
+        elif "tablet" in user_agent_lower or "ipad" in user_agent_lower:
+            device_type = "tablet"
+        
+        # Basic OS detection
+        os = "Unknown"
+        if "windows" in user_agent_lower:
+            os = "Windows"
+        elif "mac os" in user_agent_lower:
+            os = "macOS"
+        elif "linux" in user_agent_lower:
+            os = "Linux"
+        elif "android" in user_agent_lower:
+            os = "Android"
+        elif "ios" in user_agent_lower:
+            os = "iOS"
+        
+        return {
+            "device_type": device_type,
+            "browser": browser,
+            "os": os
+        }
     
     @staticmethod
     def _get_location_from_ip(ip_address: Optional[str]) -> Dict[str, Optional[str]]:

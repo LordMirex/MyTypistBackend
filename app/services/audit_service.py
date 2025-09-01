@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional, List
 from fastapi import Request
 from sqlalchemy.orm import Session
 from geoip2 import database as geoip_db
-from user_agents import parse as parse_user_agent
+# from user_agents import parse as parse_user_agent  # Removed dependency
 
 from config import settings
 from app.models.audit import AuditLog, AuditEventType, AuditLevel
