@@ -42,13 +42,18 @@ if "sqlite" in settings.DATABASE_URL.lower():
         cursor.execute("PRAGMA busy_timeout=30000")
         cursor.close()
 else:
-    # PostgreSQL or other database
+    # PostgreSQL production optimizations
     engine = create_engine(
         settings.DATABASE_URL,
-        pool_size=20,
-        max_overflow=0,
-        pool_pre_ping=True,
-        pool_recycle=300,
+        pool_size=20,                    # Base connection pool
+        max_overflow=30,                 # Allow burst traffic
+        pool_timeout=30,                 # Connection wait timeout
+        pool_recycle=3600,               # Recycle connections after 1 hour
+        pool_pre_ping=True,              # Validate connections before use
+        connect_args={
+            "connect_timeout": 10,
+            "options": "-c jit=off -c application_name=MyTypist-Backend"
+        },
         echo=settings.DEBUG
     )
 
@@ -90,3 +95,24 @@ class DatabaseManager:
     def close_session(session):
         """Close database session"""
         session.close()
+    
+    @staticmethod
+    def get_pool_status():
+        """Get connection pool status for monitoring"""
+        pool = engine.pool
+        return {
+            "pool_size": pool.size(),
+            "checked_out": pool.checkedout(),
+            "overflow": pool.overflow(),
+            "checked_in": pool.checkedin()
+        }
+    
+    @staticmethod
+    def optimize_database():
+        """Run database optimization commands"""
+        with engine.connect() as conn:
+            # Analyze tables for query planner
+            conn.execute(text("ANALYZE"))
+            # Update statistics
+            conn.execute(text("VACUUM ANALYZE"))
+            conn.commit()

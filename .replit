@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["cargo", "file", "libiconv", "libxcrypt", "openssl", "pkg-config", "rustc", "redis"]
+packages = ["cargo", "file", "libiconv", "libuv", "libxcrypt", "openssl", "pkg-config", "redis", "rustc"]
 
 [workflows]
 runButton = "Project"

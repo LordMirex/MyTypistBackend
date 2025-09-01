@@ -52,8 +52,22 @@ class Settings(BaseSettings):
     STORAGE_PATH: str = os.getenv("STORAGE_PATH", "./storage")
     TEMPLATES_PATH: str = os.path.join(STORAGE_PATH, "templates")
     DOCUMENTS_PATH: str = os.path.join(STORAGE_PATH, "documents")
-    MAX_FILE_SIZE: int = 50 * 1024 * 1024  # 50MB
-    ALLOWED_EXTENSIONS: List[str] = [".docx", ".doc", ".pdf"]
+    SIGNATURES_PATH: str = os.path.join(STORAGE_PATH, "signatures")
+    UPLOADS_PATH: str = os.path.join(STORAGE_PATH, "uploads")
+    QUARANTINE_PATH: str = os.path.join(STORAGE_PATH, "quarantine")
+    MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB for production
+    ALLOWED_EXTENSIONS: List[str] = [".docx", ".doc", ".pdf", ".xlsx", ".pptx", ".png", ".jpg", ".jpeg"]
+    
+    # MIME type validation
+    ALLOWED_MIME_TYPES: List[str] = [
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/msword",
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "image/png",
+        "image/jpeg"
+    ]
     
     # Flutterwave
     FLUTTERWAVE_PUBLIC_KEY: str = os.getenv("FLUTTERWAVE_PUBLIC_KEY", "")
@@ -72,6 +86,18 @@ class Settings(BaseSettings):
     CACHE_TTL: int = 3600  # 1 hour
     TEMPLATE_CACHE_TTL: int = 86400  # 24 hours
     DOCUMENT_GENERATION_TIMEOUT: int = 30  # seconds
+    
+    # Advanced Performance Settings
+    MAX_CONCURRENT_UPLOADS: int = 10
+    COMPRESSION_THRESHOLD: int = 1024  # Compress responses > 1KB
+    SLOW_REQUEST_THRESHOLD: float = 1.0  # Log requests > 1 second
+    ENCRYPTION_ENABLED: bool = True
+    
+    # Database Performance
+    DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE", "20"))
+    DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW", "30"))
+    DB_POOL_TIMEOUT: int = int(os.getenv("DB_POOL_TIMEOUT", "30"))
+    DB_POOL_RECYCLE: int = int(os.getenv("DB_POOL_RECYCLE", "3600"))
     
     # Compliance
     GDPR_ENABLED: bool = True

@@ -17,11 +17,14 @@ from celery import Celery
 from config import settings
 from database import engine, SessionLocal
 from app.models import user, template, document, signature, visit, payment, audit
-from app.routes import auth, documents, templates, signatures, analytics, payments, admin
+from app.routes import auth, documents, templates, signatures, analytics, payments, admin, monitoring
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.security import SecurityMiddleware
 from app.middleware.audit import AuditMiddleware
+from app.middleware.performance import PerformanceMiddleware, CompressionMiddleware
+from app.middleware.advanced_security import AdvancedSecurityMiddleware, RequestValidationMiddleware
 from app.services.audit_service import AuditService
+from app.services.cache_service import cache_service
 
 
 # Create database tables
@@ -86,6 +89,13 @@ async def lifespan(app: FastAPI):
     # Startup
     print("🚀 MyTypist Backend Starting...")
     
+    # Initialize cache service
+    try:
+        await cache_service.initialize()
+        print("✅ Cache service initialized")
+    except Exception as e:
+        print(f"⚠️ Cache service failed to initialize: {e}")
+    
     # Test Redis connection (optional)
     try:
         redis_client.ping()
@@ -128,7 +138,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Security middleware
+# Performance and security middleware (order matters!)
+app.add_middleware(CompressionMiddleware, minimum_size=1024, compression_level=6)
+app.add_middleware(PerformanceMiddleware, slow_request_threshold=1.0)
+app.add_middleware(AdvancedSecurityMiddleware)
+app.add_middleware(RequestValidationMiddleware)
 app.add_middleware(SecurityMiddleware)
 app.add_middleware(AuditMiddleware)
 app.add_middleware(RateLimitMiddleware, redis_client=redis_client)
@@ -242,6 +256,7 @@ app.include_router(signatures.router, prefix="/api/signatures", tags=["Signature
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(monitoring.router, prefix="/api/monitoring", tags=["Monitoring"])
 
 
 if __name__ == "__main__":
