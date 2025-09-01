@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["cargo", "file", "libiconv", "libuv", "libxcrypt", "openssl", "pkg-config", "redis", "rustc"]
+packages = ["cargo", "file", "freetype", "lcms2", "libGL", "libGLU", "libiconv", "libimagequant", "libjpeg", "libtiff", "libuv", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "poppler_utils", "redis", "rustc", "tcl", "tesseract", "tk", "xsimd", "zlib"]
 
 [workflows]
 runButton = "Project"

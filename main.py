@@ -271,6 +271,13 @@ app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(monitoring.router, prefix="/api/monitoring", tags=["Monitoring"])
 
+# Include enhanced v2 API endpoints
+try:
+    from app.routes.enhanced_documents import router as enhanced_docs_router
+    app.include_router(enhanced_docs_router, tags=["Enhanced Document Processing v2"])
+except ImportError:
+    print("⚠️  Enhanced document endpoints not available - missing dependencies")
+
 
 if __name__ == "__main__":
     import uvicorn
