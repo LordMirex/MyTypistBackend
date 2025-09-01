@@ -248,6 +248,19 @@ async def health_check():
     return health_status
 
 
+# Root endpoint
+@app.get("/")
+async def root():
+    """Welcome message and API information"""
+    return {
+        "message": "Welcome to MyTypist API",
+        "description": "High-performance document automation platform for Nigerian businesses",
+        "version": settings.APP_VERSION,
+        "status": "running",
+        "documentation": "/api/docs",
+        "health_check": "/health"
+    }
+
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
