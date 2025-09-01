@@ -3,13 +3,13 @@ Authentication middleware
 """
 
 from jose import jwt
-from fastapi import Request, HTTPException, status
+from fastapi import Request, HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 from sqlalchemy.orm import Session
 
 from config import settings
-from database import SessionLocal
+from database import SessionLocal, get_db
 from app.models.user import User
 from app.services.auth_service import AuthService
 
@@ -120,5 +120,54 @@ class AuthMiddleware(BaseHTTPMiddleware):
         for public_route in self.PUBLIC_ROUTES:
             if path.startswith(public_route):
                 return True
+
+
+# Dependency function for getting current user in FastAPI routes
+security = HTTPBearer()
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+) -> User:
+    """Get current authenticated user from JWT token"""
+    try:
+        # Decode JWT token
+        payload = jwt.decode(
+            credentials.credentials,
+            settings.JWT_SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM]
+        )
         
-        return False
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token: missing user ID"
+            )
+        
+        # Get user from database
+        user = db.query(User).filter(User.id == int(user_id)).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found"
+            )
+        
+        if user.status != "active":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account is not active"
+            )
+        
+        return user
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
+    except jwt.JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )

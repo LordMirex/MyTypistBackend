@@ -70,8 +70,12 @@ class RealtimeDraftsManager:
         except Exception:
             self.redis_available = False
         
-        # Start cleanup task
-        asyncio.create_task(self._cleanup_expired_drafts())
+        # Start cleanup task when event loop is available
+        try:
+            asyncio.create_task(self._cleanup_expired_drafts())
+        except RuntimeError:
+            # No event loop available during import, will start later
+            pass
     
     async def create_draft(
         self,

@@ -188,3 +188,20 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 }
         
         return status
+
+
+# Decorator function for route-specific rate limiting
+def rate_limit(max_requests: int = 100, window_seconds: int = 60):
+    """
+    Decorator for applying rate limits to specific routes
+    
+    Args:
+        max_requests: Maximum requests allowed
+        window_seconds: Time window in seconds
+    """
+    def decorator(func):
+        # Store rate limit metadata on the function
+        func._rate_limit_max_requests = max_requests
+        func._rate_limit_window_seconds = window_seconds
+        return func
+    return decorator

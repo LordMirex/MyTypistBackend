@@ -5,8 +5,23 @@ Signature model and related functionality
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, LargeBinary
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from enum import Enum
 
 from database import Base
+
+class SignatureType(Enum):
+    """Signature input types"""
+    DRAW = "draw"
+    TYPE = "type"
+    UPLOAD = "upload"
+    CANVAS = "canvas"
+
+class SignatureStatus(Enum):
+    """Signature processing status"""
+    PENDING = "pending"
+    PROCESSED = "processed"
+    VERIFIED = "verified"
+    REJECTED = "rejected"
 
 
 class Signature(Base):

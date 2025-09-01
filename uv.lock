@@ -158,6 +158,23 @@ wheels = [
 ]
 
 [[package]]
+name = "appscript"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lxml", marker = "sys_platform == 'darwin'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a3/84/5c0aec149c6a002d46af17e3d2c5efbe5e8258ef7574cfc17cd1b26c726e/appscript-1.3.0.tar.gz", hash = "sha256:80943118bc97f9f78a8aa55f85565752ed4d82c7893427d7d9ebfdf401c12b2c", size = 295205 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/64/db8dddd3c561fe5085e5b3a60419bfb560f07e1ca0dc1c7027cbaa5fb582/appscript-1.3.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:76a3507b27c78bf79af83a5f6fac49664b53d530d75632c023e53df1bd350caf", size = 99353 },
+    { url = "https://files.pythonhosted.org/packages/40/ee/4e0dee488d3dd35aab03c2f6ecb6dc0161fad200077cca68afe041079d2b/appscript-1.3.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:94ca097d672de5b8cfc82b4179b00cabd21588dbfd939347cf14a9e81955b2d5", size = 85401 },
+    { url = "https://files.pythonhosted.org/packages/b8/e2/05fd221bea1d309211569130a1a8f0966eb56394e46df068a69df0f29d61/appscript-1.3.0-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:c0b5c160908de728072d4a0ae57f286608c5d7692bfccbc6eadde868aac2742b", size = 99575 },
+    { url = "https://files.pythonhosted.org/packages/df/2f/3ee4190ce97b0b39df58184210d3baaa5fe59ae0972e63c2c85f122ca887/appscript-1.3.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:d2a287b81030c81017127d4fb1c24729623576c50d2ff41694476b9af3ce0a97", size = 85496 },
+    { url = "https://files.pythonhosted.org/packages/92/5a/3b642e3e904fb37d45e40bb07b4362979160bdecb0d37aa74f2506b1a47e/appscript-1.3.0-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:13094640e2694b888827d4e133f33dad1e08c9d7102b447c3cc8a73246fdab40", size = 99574 },
+    { url = "https://files.pythonhosted.org/packages/5c/bc/d8558bec737e02a9c404fb3b985b8636c313bb65a176375d551cb839e876/appscript-1.3.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:e7b4760105810e9b1ecd5b40aba7617e0a047346fb94ee4370e9d37e4383b78d", size = 85503 },
+]
+
+[[package]]
 name = "async-timeout"
 version = "5.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -470,6 +487,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b5/4a/263763cb2ba3816dd94b08ad3a33d5fdae34ecb856678773cc40a3605829/dnspython-2.7.0.tar.gz", hash = "sha256:ce9c432eda0dc91cf618a5cedf1a4e142651196bbcd2c80e89ed5a907e5cfaf1", size = 345197 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/68/1b/e0a87d256e40e8c888847551b20a017a6b98139178505dc7ffb96f04e954/dnspython-2.7.0-py3-none-any.whl", hash = "sha256:b4c34b7d10b51bcc3a5071e7b8dee77939f1e878477eeecc965e9835f63c6c86", size = 313632 },
+]
+
+[[package]]
+name = "docx2pdf"
+version = "0.1.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "appscript", marker = "sys_platform == 'darwin'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ab/5d/112531fff53cf60513e14fa1707755c874d47880ec4de7b2235302ad19a0/docx2pdf-0.1.8.tar.gz", hash = "sha256:6d2c20f9ad36eec75f4da017dc7a97622946954a6124ca0b11772875fa86fbed", size = 6483 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/53/4f/1155781308281e67f80b829738a29e5354e03664c62311f753056afc873b/docx2pdf-0.1.8-py3-none-any.whl", hash = "sha256:00be1401fd486640314e993423a0a1cbdbc21142186f68549d962d505b2e8a12", size = 6741 },
 ]
 
 [[package]]
@@ -1494,6 +1525,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pypdf2"
+version = "3.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/bb/18dc3062d37db6c491392007dfd1a7f524bb95886eb956569ac38a23a784/PyPDF2-3.0.1.tar.gz", hash = "sha256:a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440", size = 227419 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8e/5e/c86a5643653825d3c913719e788e41386bee415c2b87b4f955432f2de6b2/pypdf2-3.0.1-py3-none-any.whl", hash = "sha256:d16e4205cfee272fbdc0568b68d82be796540b1537508cef59388f839c191928", size = 232572 },
+]
+
+[[package]]
 name = "pytesseract"
 version = "0.3.13"
 source = { registry = "https://pypi.org/simple" }
@@ -1587,6 +1627,25 @@ wheels = [
 ]
 
 [[package]]
+name = "pywin32"
+version = "311"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7c/af/449a6a91e5d6db51420875c54f6aff7c97a86a3b13a0b4f1a5c13b988de3/pywin32-311-cp311-cp311-win32.whl", hash = "sha256:184eb5e436dea364dcd3d2316d577d625c0351bf237c4e9a5fabbcfa5a58b151", size = 8697031 },
+    { url = "https://files.pythonhosted.org/packages/51/8f/9bb81dd5bb77d22243d33c8397f09377056d5c687aa6d4042bea7fbf8364/pywin32-311-cp311-cp311-win_amd64.whl", hash = "sha256:3ce80b34b22b17ccbd937a6e78e7225d80c52f5ab9940fe0506a1a16f3dab503", size = 9508308 },
+    { url = "https://files.pythonhosted.org/packages/44/7b/9c2ab54f74a138c491aba1b1cd0795ba61f144c711daea84a88b63dc0f6c/pywin32-311-cp311-cp311-win_arm64.whl", hash = "sha256:a733f1388e1a842abb67ffa8e7aad0e70ac519e09b0f6a784e65a136ec7cefd2", size = 8703930 },
+    { url = "https://files.pythonhosted.org/packages/e7/ab/01ea1943d4eba0f850c3c61e78e8dd59757ff815ff3ccd0a84de5f541f42/pywin32-311-cp312-cp312-win32.whl", hash = "sha256:750ec6e621af2b948540032557b10a2d43b0cee2ae9758c54154d711cc852d31", size = 8706543 },
+    { url = "https://files.pythonhosted.org/packages/d1/a8/a0e8d07d4d051ec7502cd58b291ec98dcc0c3fff027caad0470b72cfcc2f/pywin32-311-cp312-cp312-win_amd64.whl", hash = "sha256:b8c095edad5c211ff31c05223658e71bf7116daa0ecf3ad85f3201ea3190d067", size = 9495040 },
+    { url = "https://files.pythonhosted.org/packages/ba/3a/2ae996277b4b50f17d61f0603efd8253cb2d79cc7ae159468007b586396d/pywin32-311-cp312-cp312-win_arm64.whl", hash = "sha256:e286f46a9a39c4a18b319c28f59b61de793654af2f395c102b4f819e584b5852", size = 8710102 },
+    { url = "https://files.pythonhosted.org/packages/a5/be/3fd5de0979fcb3994bfee0d65ed8ca9506a8a1260651b86174f6a86f52b3/pywin32-311-cp313-cp313-win32.whl", hash = "sha256:f95ba5a847cba10dd8c4d8fefa9f2a6cf283b8b88ed6178fa8a6c1ab16054d0d", size = 8705700 },
+    { url = "https://files.pythonhosted.org/packages/e3/28/e0a1909523c6890208295a29e05c2adb2126364e289826c0a8bc7297bd5c/pywin32-311-cp313-cp313-win_amd64.whl", hash = "sha256:718a38f7e5b058e76aee1c56ddd06908116d35147e133427e59a3983f703a20d", size = 9494700 },
+    { url = "https://files.pythonhosted.org/packages/04/bf/90339ac0f55726dce7d794e6d79a18a91265bdf3aa70b6b9ca52f35e022a/pywin32-311-cp313-cp313-win_arm64.whl", hash = "sha256:7b4075d959648406202d92a2310cb990fea19b535c7f4a78d3f5e10b926eeb8a", size = 8709318 },
+    { url = "https://files.pythonhosted.org/packages/c9/31/097f2e132c4f16d99a22bfb777e0fd88bd8e1c634304e102f313af69ace5/pywin32-311-cp314-cp314-win32.whl", hash = "sha256:b7a2c10b93f8986666d0c803ee19b5990885872a7de910fc460f9b0c2fbf92ee", size = 8840714 },
+    { url = "https://files.pythonhosted.org/packages/90/4b/07c77d8ba0e01349358082713400435347df8426208171ce297da32c313d/pywin32-311-cp314-cp314-win_amd64.whl", hash = "sha256:3aca44c046bd2ed8c90de9cb8427f581c479e594e99b5c0bb19b29c10fd6cb87", size = 9656800 },
+    { url = "https://files.pythonhosted.org/packages/c0/d2/21af5c535501a7233e734b8af901574572da66fcc254cb35d0609c9080dd/pywin32-311-cp314-cp314-win_arm64.whl", hash = "sha256:a508e2d9025764a8270f93111a970e1d0fbfc33f4153b388bb649b7eec4f9b42", size = 8932540 },
+]
+
+[[package]]
 name = "redis"
 version = "6.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1607,6 +1666,7 @@ dependencies = [
     { name = "alembic" },
     { name = "celery" },
     { name = "cryptography" },
+    { name = "docx2pdf" },
     { name = "email-validator" },
     { name = "fastapi" },
     { name = "geoip2" },
@@ -1622,6 +1682,7 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "pypdf2" },
     { name = "pytesseract" },
     { name = "python-dateutil" },
     { name = "python-docx" },
@@ -1643,6 +1704,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.16.5" },
     { name = "celery", specifier = ">=5.5.3" },
     { name = "cryptography", specifier = ">=45.0.7" },
+    { name = "docx2pdf", specifier = ">=0.1.8" },
     { name = "email-validator", specifier = ">=2.3.0" },
     { name = "fastapi", specifier = ">=0.116.1" },
     { name = "geoip2", specifier = ">=5.1.0" },
@@ -1658,6 +1720,7 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
+    { name = "pypdf2", specifier = ">=3.0.1" },
     { name = "pytesseract", specifier = ">=0.3.13" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "python-docx", specifier = ">=1.1.2" },
@@ -1845,6 +1908,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/15/b9/cc3017f9a9c9b6e27c5106cc10cc7904653c3eec0729793aec10479dd669/starlette-0.47.3.tar.gz", hash = "sha256:6bc94f839cc176c4858894f1f8908f0ab79dfec1a6b8402f6da9be26ebea52e9", size = 2584144 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ce/fd/901cfa59aaa5b30a99e16876f11abe38b59a1a2c51ffb3d7142bb6089069/starlette-0.47.3-py3-none-any.whl", hash = "sha256:89c0778ca62a76b826101e7c709e70680a1699ca7da6b44d38eb0a7e61fe4b51", size = 72991 },
+]
+
+[[package]]
+name = "tqdm"
+version = "4.67.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2", size = 78540 },
 ]
 
 [[package]]

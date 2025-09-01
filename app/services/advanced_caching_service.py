@@ -151,8 +151,12 @@ class AdvancedCachingSystem:
             }
         }
         
-        # Start cache maintenance task
-        asyncio.create_task(self._cache_maintenance_loop())
+        # Start cache maintenance task when event loop is available
+        try:
+            asyncio.create_task(self._cache_maintenance_loop())
+        except RuntimeError:
+            # No event loop available during import, will start later
+            pass
     
     def _test_redis_connection(self) -> bool:
         """Test Redis connection"""
